@@ -1,0 +1,6 @@
+{
+  "name": "CareGuide AI",
+  "description": "An AI-powered health navigation assistant providing general health information, deterministic safety screening, urgency levels, and healthcare visit preparation.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

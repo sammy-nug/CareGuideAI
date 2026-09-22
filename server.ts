@@ -9,7 +9,13 @@ dotenv.config();
 const PORT = 3000;
 const app = express();
 
+app.disable('x-powered-by');
 app.use(express.json({ limit: '2mb' }));
+app.use((_req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('Referrer-Policy', 'no-referrer');
+  next();
+});
 
 // Lazy/safe initialization of Google Gen AI
 let geminiClient: GoogleGenAI | null = null;
@@ -44,6 +50,10 @@ app.post('/api/safety-check', (req: Request, res: Response) => {
     res.status(400).json({ error: 'Text input is required' });
     return;
   }
+  if (text.trim().length > 1500) {
+    res.status(400).json({ error: 'Input is too long for safety screening.' });
+    return;
+  }
   const result = checkEmergencySymptoms(text);
   res.json(result);
 });
@@ -76,6 +86,12 @@ app.post('/api/chat', async (req: Request, res: Response) => {
       return;
     }
 
+    if (typeof language !== 'string' || !['en', 'pcm'].includes(language)) {
+      res.status(400).json({ error: 'Unsupported language value' });
+      return;
+    }
+
+    const normalizedLanguage: 'en' | 'pcm' = language === 'pcm' ? 'pcm' : 'en';
     const latestUserMsg = [...messages].reverse().find((m) => m.role === 'user');
     const userText = latestUserMsg ? latestUserMsg.content : '';
 
@@ -92,7 +108,7 @@ app.post('/api/chat', async (req: Request, res: Response) => {
     const emergencySignal = check1.isEmergency ? check1 : check2;
 
     if (emergencySignal.isEmergency) {
-      const isPidgin = language === 'pcm';
+      const isPidgin = normalizedLanguage === 'pcm';
       res.json({
         role: 'assistant',
         emergencyAlert: emergencySignal,
@@ -147,13 +163,14 @@ app.post('/api/chat', async (req: Request, res: Response) => {
 
     // 2. GEMINI AI NAVIGATION ASSISTANT (Guarded: Never overrides emergency rules)
     const ai = getGeminiClient();
-    const isPidgin = language === 'pcm';
+    const isPidgin = normalizedLanguage === 'pcm';
 
     if (ai) {
       try {
         const systemInstruction = `You are CareGuide AI, an empathetic, highly responsible health navigation assistant.
 TARGET AUDIENCE: General users and African / Nigerian communities seeking clear, jargon-free health navigation.
 LANGUAGE: ${isPidgin ? 'Nigerian Pidgin English (warm, respectful, natural Nigerian Pidgin without derogatory stereotypes)' : 'Simple, plain, empathetic English'}.
+PRIVACY: Do not request unnecessary personally identifiable information such as full names, phone numbers, home addresses, national IDs, or payment details. Keep the conversation focused on health context only.
 
 STRICT HEALTHCARE BOUNDARIES:
 1. You are NOT a doctor or healthcare professional.
@@ -299,7 +316,7 @@ Please generate a structured navigation response adhering strictly to the safety
     }
 
     // 3. CURATED DETERMINISTIC HEALTH ENGINE (Zero downtime, strict safety)
-    const fallbackResponse = generateCuratedNavigation(userText, language, userProfile);
+    const fallbackResponse = generateCuratedNavigation(userText, normalizedLanguage, userProfile);
     res.json({
       role: 'assistant',
       navigation: fallbackResponse,

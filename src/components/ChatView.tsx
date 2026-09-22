@@ -51,28 +51,17 @@ export const ChatView: React.FC<ChatViewProps> = ({
   const t = TRANSLATIONS[language];
 
   const [input, setInput] = useState('');
-  const [messages, setMessages] = useState<ChatMessage[]>(() => {
-    // Load from local session if available
-    const saved = localStorage.getItem('careguide_chat_session');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {
-        // fallback
-      }
-    }
-    return [
-      {
-        id: 'initial-welcome',
-        role: 'assistant',
-        content: isPidgin
-          ? 'Hello! I be CareGuide AI health assistant. Wetin dey worry your body today? Explain in your own words, and I go help you understand wetin e fit mean, check how urgent e be, and help you know the correct next step.'
-          : 'Hello! I am CareGuide AI. Please describe what health concern or symptom you are experiencing in your own words. I will help you understand it, assess urgency, and guide your next steps.',
-        timestamp: Date.now(),
-        language,
-      },
-    ];
-  });
+  const [messages, setMessages] = useState<ChatMessage[]>([
+    {
+      id: 'initial-welcome',
+      role: 'assistant',
+      content: isPidgin
+        ? 'Hello! I be CareGuide AI health assistant. Wetin dey worry your body today? Explain in your own words, and I go help you understand wetin e fit mean, check how urgent e be, and help you know the correct next step.'
+        : 'Hello! I am CareGuide AI. Please describe what health concern or symptom you are experiencing in your own words. I will help you understand it, assess urgency, and guide your next steps.',
+      timestamp: Date.now(),
+      language,
+    },
+  ]);
 
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -93,15 +82,6 @@ export const ChatView: React.FC<ChatViewProps> = ({
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, loading]);
 
-  // Persist session to local storage
-  useEffect(() => {
-    try {
-      localStorage.setItem('careguide_chat_session', JSON.stringify(messages));
-    } catch (e) {
-      // ignore
-    }
-  }, [messages]);
-
   // Handle incoming initialQuery from Quick Start
   useEffect(() => {
     if (initialQuery && initialQuery.trim()) {
@@ -112,7 +92,18 @@ export const ChatView: React.FC<ChatViewProps> = ({
 
   const handleSendMessage = async (textToSend?: string) => {
     const query = (textToSend || input).trim();
-    if (!query || loading) return;
+
+    if (!query) {
+      setErrorMsg(isPidgin ? 'No information wey you write yet. Type wetin dey worry you first.' : 'Please enter a health concern before sending.');
+      return;
+    }
+
+    if (query.length > 1500) {
+      setErrorMsg(isPidgin ? 'Your message too long. Shorten am to 1500 characters or less.' : 'Your message is too long. Please keep it under 1500 characters.');
+      return;
+    }
+
+    if (loading) return;
 
     setInput('');
     setErrorMsg(null);
@@ -290,11 +281,6 @@ export const ChatView: React.FC<ChatViewProps> = ({
     setMessages(resetMsg);
     setUserProfile({});
     setErrorMsg(null);
-    try {
-      localStorage.removeItem('careguide_chat_session');
-    } catch {
-      // ignore
-    }
     if (onPipelineUpdate) onPipelineUpdate('idle');
   };
 
@@ -464,6 +450,14 @@ export const ChatView: React.FC<ChatViewProps> = ({
         id="chat-messages-container"
         className="space-y-6 min-h-[440px] max-h-[640px] overflow-y-auto p-4 sm:p-6 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/90 dark:border-slate-800 shadow-xs transition-colors"
       >
+        <div className="flex items-start gap-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 p-3 text-[11px] text-slate-600 dark:text-slate-300">
+          <ShieldCheck className="w-4 h-4 text-teal-700 dark:text-teal-300 mt-0.5 shrink-0" />
+          <span>
+            {isPidgin
+              ? 'Privacy tip: no need to type your name, phone number, address, or other personal details. Share only the symptoms you need help understanding.'
+              : 'Privacy reminder: please do not enter unnecessary personal identifiers such as names, phone numbers, addresses, or other private details.'}
+          </span>
+        </div>
         {/* Empty State / Launchpad when only 1 welcome message exists */}
         {messages.length <= 1 && (
           <div id="consultation-empty-launchpad" className="p-4 sm:p-6 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80 space-y-4">

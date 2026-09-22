@@ -8,22 +8,38 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
+
   body {
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     color: #0f172a;
-    background-color: #f8fafc;
+    background:
+      radial-gradient(circle at top, rgba(45, 212, 191, 0.14), transparent 28%),
+      linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
   }
+
   .dark body {
     color: #f1f5f9;
-    background-color: #0b1120;
+    background:
+      radial-gradient(circle at top, rgba(45, 212, 191, 0.1), transparent 26%),
+      linear-gradient(180deg, #020817 0%, #0f172a 100%);
   }
+
   h1, h2, h3, h4, .font-display {
     font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif;
     letter-spacing: -0.02em;
   }
+
+  * {
+    box-sizing: border-box;
+  }
 }
 
-/* Custom refined scrollbar */
+@layer components {
+  .soft-surface {
+    @apply bg-white/90 dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 shadow-sm;
+  }
+}
+
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;

@@ -36,46 +36,34 @@ export const HomeView: React.FC<HomeViewProps> = ({
 
   const quickPrompts = [
     {
-      text: 'I have had a headache since yesterday.',
-      textPidgin: 'My head dey pain me since yesterday.',
-      category: 'Headache',
-      tag: 'Common',
-    },
-    {
-      text: 'I have been coughing for three days.',
-      textPidgin: 'I don dey cough for three days now.',
-      category: 'Cough',
-      tag: 'Respiratory',
-    },
-    {
-      text: 'I feel dizzy when I stand up.',
-      textPidgin: 'My eye dey turn me when I stand up.',
-      category: 'Dizziness',
-      tag: 'Circulation',
-    },
-    {
-      text: 'I have a fever.',
-      textPidgin: 'My body dey hot with fever.',
-      category: 'Fever',
-      tag: 'Infection',
-    },
-    {
-      text: 'I have stomach pain.',
-      textPidgin: 'My belle dey pain me.',
-      category: 'Stomach',
-      tag: 'Digestive',
-    },
-    {
       text: 'I have had a mild headache since yesterday.',
       textPidgin: 'Small headache dey disturb me since yesterday.',
       category: 'Normal Demo',
-      tag: 'Routine Check',
+      tag: 'Monitor / General Information',
+    },
+    {
+      text: 'I have been coughing for three days and feel slightly feverish.',
+      textPidgin: 'I don dey cough for three days and my body dey hot small.',
+      category: 'Respiratory',
+      tag: 'Consider Professional Care',
+    },
+    {
+      text: 'I feel dizzy when I stand up and I am tired.',
+      textPidgin: 'My eye dey turn me when I stand up and I dey tire.',
+      category: 'Dizziness',
+      tag: 'Monitor / General Information',
+    },
+    {
+      text: 'I have a fever and stomach pain.',
+      textPidgin: 'My body dey hot and my belle dey pain me.',
+      category: 'Fever + Stomach',
+      tag: 'Consider Professional Care',
     },
     {
       text: 'I have severe chest pain and difficulty breathing.',
       textPidgin: 'Severe chest pain dey hold me and I no fit breathe.',
       category: 'Emergency Demo',
-      tag: 'Urgent Red Alert',
+      tag: 'Seek Urgent Medical Attention',
       isEmergency: true,
     },
   ];
@@ -136,6 +124,43 @@ export const HomeView: React.FC<HomeViewProps> = ({
             <div className="flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 text-teal-400 shrink-0" />
               <span>{isPidgin ? 'English & Nigerian Pidgin' : 'English & Nigerian Pidgin'}</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Challenge Showcase: What is CareGuide AI? */}
+      <section className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        <div className="p-6 sm:p-8 rounded-3xl bg-slate-950 text-white border border-slate-800 shadow-xl">
+          <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/15 text-teal-300 border border-teal-500/30 text-[10px] font-bold uppercase tracking-wider">
+            <Sparkles className="w-3.5 h-3.5" />
+            What is CareGuide AI?
+          </span>
+          <h2 className="mt-4 font-display text-2xl sm:text-3xl font-bold tracking-tight text-white">
+            A safer way to understand symptoms and prepare for care.
+          </h2>
+          <p className="mt-3 text-sm sm:text-base text-slate-300 leading-relaxed">
+            CareGuide AI translates everyday health concerns into plain-language guidance, urgent-care screening, and practical next steps — without diagnosing disease or replacing a clinician.
+          </p>
+        </div>
+
+        <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+            <div className="p-4 rounded-2xl bg-teal-50 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-800">
+              <div className="font-bold text-slate-900 dark:text-white">The Problem</div>
+              <p className="mt-1 text-xs leading-relaxed text-slate-600 dark:text-slate-300">People often describe symptoms in everyday language, but they need clearer direction on urgency and next steps.</p>
+            </div>
+            <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800">
+              <div className="font-bold text-slate-900 dark:text-white">How It Works</div>
+              <p className="mt-1 text-xs leading-relaxed text-slate-600 dark:text-slate-300">Safety rules screen emergencies first, then AI provides education and actionable health navigation guidance.</p>
+            </div>
+            <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800">
+              <div className="font-bold text-slate-900 dark:text-white">AI + Safety</div>
+              <p className="mt-1 text-xs leading-relaxed text-slate-600 dark:text-slate-300">It can explain likely next steps and warning signs, but it never diagnoses or overrules emergency red flags.</p>
+            </div>
+            <div className="p-4 rounded-2xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+              <div className="font-bold text-slate-900 dark:text-white">Privacy</div>
+              <p className="mt-1 text-xs leading-relaxed text-slate-600 dark:text-slate-300">No login or account is required, and users are encouraged not to share unnecessary personal identifiers.</p>
             </div>
           </div>
         </div>
@@ -218,6 +243,26 @@ export const HomeView: React.FC<HomeViewProps> = ({
             </div>
           </div>
         </div>
+      </section>
+
+      {/* Navigation Level Legend */}
+      <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {[
+          { level: 'Monitor / General Information', tone: 'emerald', text: 'Mild symptoms that are improving or have no established red flags.' },
+          { level: 'Consider Professional Care', tone: 'amber', text: 'Symptoms lasting several days, worsening, or affecting daily activity.' },
+          { level: 'Seek Urgent Medical Attention', tone: 'red', text: 'Potential emergency warning signs that require immediate clinical assessment.' },
+        ].map((item) => (
+          <div key={item.level} className="p-5 rounded-2xl border bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 shadow-xs">
+            <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider border ${
+              item.tone === 'emerald' ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-900 dark:text-emerald-200 border-emerald-200 dark:border-emerald-800' :
+              item.tone === 'amber' ? 'bg-amber-100 dark:bg-amber-950 text-amber-900 dark:text-amber-200 border-amber-200 dark:border-amber-800' :
+              'bg-red-100 dark:bg-red-950 text-red-900 dark:text-red-200 border-red-200 dark:border-red-800'
+            }`}>
+              {item.level}
+            </span>
+            <p className="mt-3 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{item.text}</p>
+          </div>
+        ))}
       </section>
 
       {/* Quick Start Examples */}
